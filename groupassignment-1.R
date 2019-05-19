@@ -1,11 +1,12 @@
 library(dplyr)
 library(ggplot2)
+library(magrittr)
 
-share1<-read.csv("/Users/nirajkulkarni/Desktop/Niraj/ISB-CBA/Term-1/Business-Fundamentals/TATAMOTORS.NS.csv",stringsAsFactors = FALSE , header = TRUE)
+share1<-read.csv("TATAMOTORS.NS.csv",stringsAsFactors = FALSE , header = TRUE)
 share1
-share2<-read.csv("/Users/nirajkulkarni/Desktop/Niraj/ISB-CBA/Term-1/Business-Fundamentals/SBIN.NS.csv",stringsAsFactors = FALSE , header = TRUE)
+share2<-read.csv("SBIN.NS.csv",stringsAsFactors = FALSE , header = TRUE)
 share2
-nifty<-read.csv("/Users/nirajkulkarni/Desktop/Niraj/ISB-CBA/Term-1/Business-Fundamentals/Nifty50-NSEI.csv",stringsAsFactors = FALSE , header = TRUE)
+nifty<-read.csv("NSEI.csv",stringsAsFactors = FALSE , header = TRUE)
 nifty
 
 ####### Calculating Returns ######
@@ -15,8 +16,8 @@ share1<-share1[!(share1$Adj.Close=='null' | is.na(share1$Adj.Close)) ,] #removin
 share1
 nrow(share1)
 
-maxDate1<-share1 %>% arrange(share1$Date) %>% head(1) 
-minDate1<-share1 %>% arrange(share1$Date) %>% tail(1)
+maxDate1<-share1 %>% dplyr::arrange(share1$Date) %>% head(1) 
+minDate1<-share1 %>% dplyr::arrange(share1$Date) %>% tail(1)
 maxDate1
 minDate1
 str(maxDate1$Adj.Close)
@@ -26,7 +27,7 @@ valShare1_2<-as.numeric(as.character(minDate1$Adj.Close))
 share1_ret<-((valShare1_2-valShare1_1)/valShare1_2)*100
 share1_ret
 plot(x=share1$Adj.Close,ylab = 'Adjusted Close',type = 'line',col='blue',main = 'TataMotors Monthly Closing')
-
+graphics::plot(x=share1$Adj.Close)
 #SHARE2
 share2<-share2[!(share2$Adj.Close=='null' | is.na(share2$Adj.Close)) ,] #removing null
 share2
@@ -79,7 +80,7 @@ nifty_mean <- mean(as.numeric(as.character(nifty$Adj.Close)))
 #share1=Intercept + nifty * regression_data$nifty_close
 #if nifty mean is used i,e 9299.774 then our regression model for tata share share1 will be 
 
-share1_reg<- intercept1 + (nifty_reg1 *  nifty_mean)
+share1_reg <- intercept1 + (nifty_reg1 *  nifty_mean)
 share1_reg
 
 #for share2
