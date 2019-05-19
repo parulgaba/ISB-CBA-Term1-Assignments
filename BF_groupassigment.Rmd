@@ -10,6 +10,8 @@ Assigment Submission by
 References links referred for understanding:
 https://www.datacamp.com/community/tutorials/linear-regression-R
 https://solvemprobler.com/blog/2015/12/19/calculating-stocks-beta-using-r/
+https://www.ablebits.com/office-addins-blog/2018/08/01/linear-regression-analysis-excel/
+Yahoo finance for historical data and current prices
 
 
 ```{r, setup}
@@ -28,15 +30,15 @@ Share1 = Tata Motors  Share2 = SBI
 ```{r}
 share1<-read.csv("TATAMOTORS.NS.csv",stringsAsFactors = FALSE , header = TRUE)
 share1<-share1[!(share1$Adj.Close=='null' | is.na(share1$Adj.Close)) ,] #removing null
-maxDate1<-share1 %>% head(1) #%>% arrange(share1$Date) 
-minDate1<-share1 %>% tail(1) #%>% arrange(share1$Date) 
-valShare1_1<-as.numeric(as.character(maxDate1$Adj.Close))
-valShare1_2<-as.numeric(as.character(minDate1$Adj.Close))
+minDate1<-share1 %>% head(1) #%>% arrange(share1$Date) 
+maxDate1<-share1 %>% tail(1) #%>% arrange(share1$Date) 
+valShare1_1<-as.numeric(as.character(maxDate1$Adj.Close)) # Current value of my share
+valShare1_2<-as.numeric(as.character(minDate1$Adj.Close)) # Assumed investment value (Initial value)
 
 share1_ret<-(valShare1_1/valShare1_2 - 1)*100
 share1_ret 
 ```
-Simple Return on Share1 Tata motors is : 140.1559
+Simple Return on Share1 Tata motors is : -58.36038
 ```{r}
 plot(x=share1$Adj.Close,ylab = 'Adjusted Close',type='line',col='blue',main = 'TataMotors Monthly Closing')
 ```
@@ -46,14 +48,15 @@ plot(x=share1$Adj.Close,ylab = 'Adjusted Close',type='line',col='blue',main = 'T
 #SHARE2
 share2<-read.csv("SBIN.NS.csv",stringsAsFactors = FALSE , header = TRUE)
 share2<-share2[!(share2$Adj.Close=='null' | is.na(share2$Adj.Close)) ,] #removing null
-maxDate2<-share2 %>% head(1) 
-minDate2<-share2 %>% tail(1)
-valShare2_1<-as.numeric(as.character(maxDate2$Adj.Close))
-valShare2_2<-as.numeric(as.character(minDate2$Adj.Close))
+minDate2<-share2 %>% head(1) # Start date
+maxDate2<-share2 %>% tail(1) # Current date
+valShare2_1<-as.numeric(as.character(maxDate2$Adj.Close)) # current value
+valShare2_2<-as.numeric(as.character(minDate2$Adj.Close)) # invested value (initial)
 share2_ret<-(valShare2_1/valShare2_2 - 1)*100
-share2_ret  
+share2_ret 
+ 
 ```
-Simple Return on Share1 SBI is : -18.71877
+Simple Return on Share1 SBI is : 23.02963
 ```{r}
 plot(x=share2$Adj.Close,ylab = 'Adjusted Close',type = 'line',col='blue',main = 'SBI Monthly Closing')
 ```
@@ -62,15 +65,16 @@ plot(x=share2$Adj.Close,ylab = 'Adjusted Close',type = 'line',col='blue',main = 
 #NIFTY
 nifty<-read.csv("Nifty50-NSEI.csv",stringsAsFactors = FALSE , header = TRUE)
 nifty<-nifty[!(nifty$Adj.Close=='null' | is.na(nifty$Adj.Close)) ,] #removing null
-maxDateN<-nifty %>% arrange(nifty$Date) %>% head(1) 
-minDateN<-nifty %>% arrange(nifty$Date) %>% tail(1)
-valNifty_1<-as.numeric(as.character(maxDateN$Adj.Close))
-valNifty_2<-as.numeric(as.character(minDateN$Adj.Close))
+minDateN<-nifty %>% head(1)  # start date
+maxDateN<-nifty %>% tail(1) # Current date
+valNifty_1<-as.numeric(as.character(maxDateN$Adj.Close)) # Current value
+valNifty_2<-as.numeric(as.character(minDateN$Adj.Close)) # initial value
 nifty_ret<-(valNifty_1/valNifty_2 - 1)*100
 
 nifty_ret   #49.87026
 ```
-Simple Return on index Nifty is : -33.27562
+Simple Return on index Nifty is : 49.87026
+Seems that our economy has grown substantially as per NIFTY index
 ```{r}
 plot(x=nifty$Adj.Close,ylab = 'Adjusted Close',type = 'line',col='blue',main = 'Nifty Monthly Closing')
 ```
@@ -94,6 +98,12 @@ nifty_mean <- mean(as.numeric(as.character(nifty$Adj.Close)))
 #if nifty mean is used i,e 9299.774 then our regression model for tata share share1 will be 
 share1_reg<- intercept1 + (nifty_reg1 *  nifty_mean)
 share1_reg   #391.0659
+
+######## Prediction #########
+# If we use present nifty value, SBI is predicted to be 265.77 as opposed to actual of 319.25
+share1_pred = intercept1 + (nifty_reg1 * 11400)
+share1_pred
+
 ```
 
 ```{r}
@@ -116,6 +126,10 @@ nifty_mean <- mean(as.numeric(as.character(nifty$Adj.Close)))
 
 share2_reg<- intercept2 + (nifty_reg2 *  nifty_mean)
 share2_reg
+######## Prediction #########
+# If we use present nifty value, Tata motors is predicted to be 307.0246 as opposed to actual of 176.85
+share2_pred = intercept2 + (nifty_reg2 * 11400)
+share2_pred
 ```
 
 ```{r}
@@ -150,3 +164,33 @@ print(beta_val_share2)
 ```
 Beta Value of Share1 ie TATA MOTORS stock is 1.712694
 Beta Value of Share1 ie SBI stock is 1.575992
+
+# Summary of above analysis and Interpretation
+
+We begun our analysis by starting to play with stock prices in the excel sheet - BF Assignment - Term 1.xlsx - enclosed in the assignment upload.
+The analysis with this code and excel tools was verified to check our derived regression model. 
+We first calculated total returns on Stock 1 (TATA MOTORS), Stock 2 (SBI), and NIFTY Index. Then moved ahead with calculating monthly returns and applied linear regression model on Stock_Y against Stock_X(NIFTY returns). Then derived the summary and beta values. 
+Then we have finally calculated mean and to-date predictions for both the stocks
+Here's our interpretation of the results
+
+## TATA MOTORS Stock Price
+
+Beta = 1.712694 suggests a strong relationship with NIFTY index
+Looking at the adjusted closing graphical representation for NIFTY index and TATA MOTORS respectively we can explain that the fluctuations (dips, slopes and peaks) for the monthly data are quite symmetric. A lower p value of 7.044e-09 and not a very low corelation of 0.6 establishes the relevance of the statistical model we've derived. 
+
+However, as per regression summary Tata motors is predicted to be 307.0246 for today(May 19, 2019) as opposed to actual value of 176.85.
+We could explain this with the regression model summary values where coefficient of determination is only ~0.436 which suggests only 43% of the actual values are explained by the model, leaving us with a higher residual error. Or in other words, our prediction with given data is 43% likely to be correct.
+Thus, NIFTY index doesn't solely contribute to the stock price prediction which suggests we must consider other variables and run multiple regression to predict better.
+
+The best fit line on the scatter plot has considerably high number of values lying farther from the line which explain the high error values and the difference in today's prediction and actual stock price
+
+## SBI Stock Price
+
+A beta = 1.575992 suggests yet another positive relation between NIFTY iondex and SBI stock prices. We observed the relation between NIFTY index and SBI adjusted closing price visual representation and both plots agree upon the fluctuations. A low p-value = 7.66287837116743E-11 and higher corelation of 0.7 suggests strong relationship of SBI with the NIFTY index.
+
+Yet another lower value of R square (coeffitient of determination) = 0.514898828974569 leaves us with less reliability on our prediction and thus higher error on best fit.
+SBI is predicted to be 265.77 on May 19, 2019 as opposed to actual of 319.25. This value is comparatively less farther than that of TATA MOTORS Prediction.
+Which suggests SBI has stronger relation with the market or prediction reliability is higher (only comparatively).
+
+Overall we feel the linear regression model explains the stock relationship with the economy, but we can surely predict better by adding other variables in our analysis if we were to study a specific stock.
+
